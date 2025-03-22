@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker push hktr92/tasty-crab --all-tags

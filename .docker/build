@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+TARGETS=("buildkit" "tasty-crab" "foundation-lambda" "foundation")
+DESIRED_TARGET=${1:-}
+
+_build_docker_image() {
+    local target=$1
+    
+    if [[ -z $target ]]; then
+        echo "target arg is required"
+        return 1
+    fi
+
+    docker build --target "$target" --tag "hktr92/tasty-crab:$target" .
+    return $?
+}
+
+if [[ -z "$DESIRED_TARGET" ]]; then
+    for target in "${TARGETS[@]}"; do
+        echo "building target: $target";
+        _build_docker_image "$target"
+    done
+else
+    if [[ ${TARGETS[@]} =~ "$DESIRED_TARGET" ]]; then
+        echo "Building target: $DESIRED_TARGET..."
+        _build_docker_image "$DESIRED_TARGET"
+    else
+        echo "Unknown target: $DESIRED_TARGET"
+        echo "Available targets:"
+        for target in "${TARGETS[@]}"; do
+            echo -e "\t$target"
+        done
+        exit 1
+    fi
+fi
